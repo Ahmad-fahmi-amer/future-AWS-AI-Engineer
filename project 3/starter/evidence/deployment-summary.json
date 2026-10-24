@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-21T21:41:24.758455+00:00",
+  "stacks": {
+    "udacity-agentcore": "UPDATE_COMPLETE",
+    "udacity-agentcore-knowledge-bases": "CREATE_COMPLETE",
+    "AgentCore-udacity-default": "UPDATE_COMPLETE",
+    "CDKToolkit": "UPDATE_COMPLETE"
+  },
+  "runtime": {
+    "status": "READY",
+    "version": "3",
+    "protocol": "HTTP",
+    "network": "PUBLIC",
+    "foundation_role_matches": true,
+    "all_required_env_set": true
+  },
+  "memory": {
+    "status": "ACTIVE",
+    "event_expiry_days": 7,
+    "strategy_types": [
+      "SUMMARIZATION"
+    ]
+  },
+  "source_sha256": "378c9549ff94465c668a36e5f6a39ee8ad3fefd7672f14f1533628070aa9982f"
+}

@@ -1,0 +1,749 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaMart three policy Knowledge Bases on foundation S3 Vectors; no provisioned cluster",
+  "Parameters": {
+    "ProjectName": {
+      "Type": "String",
+      "Default": "udacity-agentcore"
+    }
+  },
+  "Resources": {
+    "ReturnsKnowledgeBaseRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "bedrock.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                },
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "returns-policy-ingestion",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:ListBucket"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":s3:::",
+                        {
+                          "Fn::ImportValue": {
+                            "Fn::Sub": "${ProjectName}-PolicyBucket"
+                          }
+                        }
+                      ]
+                    ]
+                  },
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        "policies/returns/",
+                        "policies/returns/*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":s3:::",
+                              {
+                                "Fn::ImportValue": {
+                                  "Fn::Sub": "${ProjectName}-PolicyBucket"
+                                }
+                              }
+                            ]
+                          ]
+                        },
+                        "/policies/returns/*"
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "bedrock:InvokeModel"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3vectors:GetIndex",
+                    "s3vectors:PutVectors",
+                    "s3vectors:GetVectors",
+                    "s3vectors:DeleteVectors",
+                    "s3vectors:QueryVectors"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::ImportValue": {
+                            "Fn::Sub": "${ProjectName}-VectorBucketArn"
+                          }
+                        },
+                        "/index/",
+                        "returns-policy-index"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "ReturnsKnowledgeBase": {
+      "Type": "AWS::Bedrock::KnowledgeBase",
+      "Properties": {
+        "Name": "novamart-returns-policy-kb",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ReturnsKnowledgeBaseRole",
+            "Arn"
+          ]
+        },
+        "Tags": {
+          "Project": {
+            "Ref": "ProjectName"
+          }
+        },
+        "KnowledgeBaseConfiguration": {
+          "Type": "VECTOR",
+          "VectorKnowledgeBaseConfiguration": {
+            "EmbeddingModelArn": {
+              "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0"
+            },
+            "EmbeddingModelConfiguration": {
+              "BedrockEmbeddingModelConfiguration": {
+                "Dimensions": 1024
+              }
+            }
+          }
+        },
+        "StorageConfiguration": {
+          "Type": "S3_VECTORS",
+          "S3VectorsConfiguration": {
+            "VectorBucketArn": {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${ProjectName}-VectorBucketArn"
+              }
+            },
+            "IndexName": "returns-policy-index"
+          }
+        }
+      }
+    },
+    "ReturnsDataSource": {
+      "Type": "AWS::Bedrock::DataSource",
+      "Properties": {
+        "Name": "returns-policy-documents",
+        "KnowledgeBaseId": {
+          "Ref": "ReturnsKnowledgeBase"
+        },
+        "DataDeletionPolicy": "RETAIN",
+        "DataSourceConfiguration": {
+          "Type": "S3",
+          "S3Configuration": {
+            "BucketArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":s3:::",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${ProjectName}-PolicyBucket"
+                    }
+                  }
+                ]
+              ]
+            },
+            "InclusionPrefixes": [
+              "policies/returns/"
+            ]
+          }
+        },
+        "VectorIngestionConfiguration": {
+          "ChunkingConfiguration": {
+            "ChunkingStrategy": "FIXED_SIZE",
+            "FixedSizeChunkingConfiguration": {
+              "MaxTokens": 300,
+              "OverlapPercentage": 20
+            }
+          }
+        }
+      }
+    },
+    "ShippingKnowledgeBaseRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "bedrock.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                },
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "shipping-policy-ingestion",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:ListBucket"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":s3:::",
+                        {
+                          "Fn::ImportValue": {
+                            "Fn::Sub": "${ProjectName}-PolicyBucket"
+                          }
+                        }
+                      ]
+                    ]
+                  },
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        "policies/shipping/",
+                        "policies/shipping/*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":s3:::",
+                              {
+                                "Fn::ImportValue": {
+                                  "Fn::Sub": "${ProjectName}-PolicyBucket"
+                                }
+                              }
+                            ]
+                          ]
+                        },
+                        "/policies/shipping/*"
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "bedrock:InvokeModel"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3vectors:GetIndex",
+                    "s3vectors:PutVectors",
+                    "s3vectors:GetVectors",
+                    "s3vectors:DeleteVectors",
+                    "s3vectors:QueryVectors"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::ImportValue": {
+                            "Fn::Sub": "${ProjectName}-VectorBucketArn"
+                          }
+                        },
+                        "/index/",
+                        "shipping-policy-index"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "ShippingKnowledgeBase": {
+      "Type": "AWS::Bedrock::KnowledgeBase",
+      "Properties": {
+        "Name": "novamart-shipping-policy-kb",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ShippingKnowledgeBaseRole",
+            "Arn"
+          ]
+        },
+        "Tags": {
+          "Project": {
+            "Ref": "ProjectName"
+          }
+        },
+        "KnowledgeBaseConfiguration": {
+          "Type": "VECTOR",
+          "VectorKnowledgeBaseConfiguration": {
+            "EmbeddingModelArn": {
+              "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0"
+            },
+            "EmbeddingModelConfiguration": {
+              "BedrockEmbeddingModelConfiguration": {
+                "Dimensions": 1024
+              }
+            }
+          }
+        },
+        "StorageConfiguration": {
+          "Type": "S3_VECTORS",
+          "S3VectorsConfiguration": {
+            "VectorBucketArn": {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${ProjectName}-VectorBucketArn"
+              }
+            },
+            "IndexName": "shipping-policy-index"
+          }
+        }
+      }
+    },
+    "ShippingDataSource": {
+      "Type": "AWS::Bedrock::DataSource",
+      "Properties": {
+        "Name": "shipping-policy-documents",
+        "KnowledgeBaseId": {
+          "Ref": "ShippingKnowledgeBase"
+        },
+        "DataDeletionPolicy": "RETAIN",
+        "DataSourceConfiguration": {
+          "Type": "S3",
+          "S3Configuration": {
+            "BucketArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":s3:::",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${ProjectName}-PolicyBucket"
+                    }
+                  }
+                ]
+              ]
+            },
+            "InclusionPrefixes": [
+              "policies/shipping/"
+            ]
+          }
+        },
+        "VectorIngestionConfiguration": {
+          "ChunkingConfiguration": {
+            "ChunkingStrategy": "FIXED_SIZE",
+            "FixedSizeChunkingConfiguration": {
+              "MaxTokens": 300,
+              "OverlapPercentage": 20
+            }
+          }
+        }
+      }
+    },
+    "WarrantyKnowledgeBaseRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": {
+              "Ref": "ProjectName"
+            }
+          }
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "bedrock.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                },
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "warranty-policy-ingestion",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:ListBucket"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":s3:::",
+                        {
+                          "Fn::ImportValue": {
+                            "Fn::Sub": "${ProjectName}-PolicyBucket"
+                          }
+                        }
+                      ]
+                    ]
+                  },
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        "policies/warranty/",
+                        "policies/warranty/*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":s3:::",
+                              {
+                                "Fn::ImportValue": {
+                                  "Fn::Sub": "${ProjectName}-PolicyBucket"
+                                }
+                              }
+                            ]
+                          ]
+                        },
+                        "/policies/warranty/*"
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "bedrock:InvokeModel"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3vectors:GetIndex",
+                    "s3vectors:PutVectors",
+                    "s3vectors:GetVectors",
+                    "s3vectors:DeleteVectors",
+                    "s3vectors:QueryVectors"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::ImportValue": {
+                            "Fn::Sub": "${ProjectName}-VectorBucketArn"
+                          }
+                        },
+                        "/index/",
+                        "warranty-policy-index"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "WarrantyKnowledgeBase": {
+      "Type": "AWS::Bedrock::KnowledgeBase",
+      "Properties": {
+        "Name": "novamart-warranty-policy-kb",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "WarrantyKnowledgeBaseRole",
+            "Arn"
+          ]
+        },
+        "Tags": {
+          "Project": {
+            "Ref": "ProjectName"
+          }
+        },
+        "KnowledgeBaseConfiguration": {
+          "Type": "VECTOR",
+          "VectorKnowledgeBaseConfiguration": {
+            "EmbeddingModelArn": {
+              "Fn::Sub": "arn:${AWS::Partition}:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0"
+            },
+            "EmbeddingModelConfiguration": {
+              "BedrockEmbeddingModelConfiguration": {
+                "Dimensions": 1024
+              }
+            }
+          }
+        },
+        "StorageConfiguration": {
+          "Type": "S3_VECTORS",
+          "S3VectorsConfiguration": {
+            "VectorBucketArn": {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${ProjectName}-VectorBucketArn"
+              }
+            },
+            "IndexName": "warranty-policy-index"
+          }
+        }
+      }
+    },
+    "WarrantyDataSource": {
+      "Type": "AWS::Bedrock::DataSource",
+      "Properties": {
+        "Name": "warranty-policy-documents",
+        "KnowledgeBaseId": {
+          "Ref": "WarrantyKnowledgeBase"
+        },
+        "DataDeletionPolicy": "RETAIN",
+        "DataSourceConfiguration": {
+          "Type": "S3",
+          "S3Configuration": {
+            "BucketArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":s3:::",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${ProjectName}-PolicyBucket"
+                    }
+                  }
+                ]
+              ]
+            },
+            "InclusionPrefixes": [
+              "policies/warranty/"
+            ]
+          }
+        },
+        "VectorIngestionConfiguration": {
+          "ChunkingConfiguration": {
+            "ChunkingStrategy": "FIXED_SIZE",
+            "FixedSizeChunkingConfiguration": {
+              "MaxTokens": 300,
+              "OverlapPercentage": 20
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ReturnsKbId": {
+      "Value": {
+        "Ref": "ReturnsKnowledgeBase"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${ProjectName}-ReturnsKbId"
+        }
+      }
+    },
+    "ReturnsDataSourceId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ReturnsDataSource",
+          "DataSourceId"
+        ]
+      }
+    },
+    "ShippingKbId": {
+      "Value": {
+        "Ref": "ShippingKnowledgeBase"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${ProjectName}-ShippingKbId"
+        }
+      }
+    },
+    "ShippingDataSourceId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ShippingDataSource",
+          "DataSourceId"
+        ]
+      }
+    },
+    "WarrantyKbId": {
+      "Value": {
+        "Ref": "WarrantyKnowledgeBase"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${ProjectName}-WarrantyKbId"
+        }
+      }
+    },
+    "WarrantyDataSourceId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "WarrantyDataSource",
+          "DataSourceId"
+        ]
+      }
+    }
+  }
+}

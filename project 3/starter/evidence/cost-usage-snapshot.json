@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-10-21T21:42:42.616498+00:00",
+  "hours": 6,
+  "model_usage": {
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0": {
+      "InputTokenCount": 50934.0,
+      "OutputTokenCount": 5017.0,
+      "Invocations": 32.0
+    },
+    "us.anthropic.claude-sonnet-4-5-20250929-v1:0": {
+      "InputTokenCount": 69462.0,
+      "OutputTokenCount": 10359.0,
+      "Invocations": 64.0
+    }
+  },
+  "conservative_inference_estimate_usd": 0.6371,
+  "estimate_note": "Budget assumptions $2/$10 per million Haiku input/output and $4/$20 Sonnet; not an AWS invoice or asserted list prices. Delayed metrics; excludes guardrails/infrastructure/memory/storage/telemetry.",
+  "cost_explorer_estimated_month_usd": "0.0004",
+  "billing_lag_warning": true
+}

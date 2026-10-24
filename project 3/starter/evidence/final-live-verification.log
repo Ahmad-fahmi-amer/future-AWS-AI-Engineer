@@ -1,0 +1,10 @@
+AWS identity VERIFIED: profile=novamart-dev region=us-east-1 account=********4915
+Runtime scenario received: I want to return my order ORD-27176 because it is defective.
+Runtime route and response VERIFIED: ['inventory_agent', 'refund_agent', 'communication_agent']
+Runtime scenario received: What is the return policy for premium customers?
+Runtime route and response VERIFIED: ['policy_agent', 'communication_agent']
+Runtime scenario received: How much are 5 items at $29.99 with 10% off?
+Runtime route and response VERIFIED: ['communication_agent']
+Two-turn runtime memory recall and events VERIFIED
+Live verification VERIFIED. Private proof: .deployment/live-verification.json
+Capture the real X-Ray Service Map in AWS Console, then run the official full suite.

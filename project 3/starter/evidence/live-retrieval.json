@@ -1,0 +1,17 @@
+{
+  "returns": {
+    "status": "VERIFIED",
+    "passages": 3,
+    "has_s3_citations": true
+  },
+  "shipping": {
+    "status": "VERIFIED",
+    "passages": 2,
+    "has_s3_citations": true
+  },
+  "warranty": {
+    "status": "VERIFIED",
+    "passages": 2,
+    "has_s3_citations": true
+  }
+}

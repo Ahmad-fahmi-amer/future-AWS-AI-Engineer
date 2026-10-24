@@ -1,0 +1,84 @@
+{
+  "stack:udacity-agentcore": {
+    "status": "UPDATE_COMPLETE"
+  },
+  "stack:udacity-agentcore-knowledge-bases": {
+    "status": "CREATE_COMPLETE"
+  },
+  "stack:AgentCore-udacity-default": {
+    "status": "UPDATE_COMPLETE"
+  },
+  "stack:CDKToolkit": {
+    "status": "UPDATE_COMPLETE"
+  },
+  "runtime": {
+    "status": "READY",
+    "network": {
+      "networkMode": "PUBLIC"
+    },
+    "protocol": {
+      "serverProtocol": "HTTP"
+    },
+    "environment_keys": [
+      "AGENTCORE_MEMORY_ID",
+      "AGENT_LOG_GROUP",
+      "AGENT_LOG_LEVEL",
+      "AGENT_LOG_TO_CLOUDWATCH",
+      "AGENT_TRACE_SAMPLING_RATE",
+      "AGENT_TRACING_ENABLED",
+      "AWS_REGION",
+      "GUARDRAIL_ID",
+      "GUARDRAIL_VERSION",
+      "PROJECT_NAME",
+      "RETURNS_KB_ID",
+      "SHIPPING_KB_ID",
+      "WARRANTY_KB_ID"
+    ]
+  },
+  "memory": {
+    "status": "ACTIVE",
+    "retention": 7,
+    "strategies": [
+      [
+        "SUMMARIZATION",
+        "ACTIVE"
+      ]
+    ]
+  },
+  "guardrail": {
+    "status": "READY",
+    "version": "1",
+    "topic_tier": {
+      "tierName": "STANDARD"
+    }
+  },
+  "kb:returns": {
+    "status": "ACTIVE",
+    "storage": "S3_VECTORS"
+  },
+  "kb:shipping": {
+    "status": "ACTIVE",
+    "storage": "S3_VECTORS"
+  },
+  "kb:warranty": {
+    "status": "ACTIVE",
+    "storage": "S3_VECTORS"
+  },
+  "trace-destination": {
+    "Destination": "CloudWatchLogs",
+    "Status": "ACTIVE"
+  },
+  "traces": {
+    "count": 0,
+    "errors": 0,
+    "faults": 0,
+    "latencies": []
+  },
+  "logs": {
+    "events": 0
+  },
+  "cost": {
+    "estimated_usd": "0.0004",
+    "estimated": true
+  }
+}

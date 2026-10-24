@@ -1,0 +1,83 @@
+tests/test_agent.py: OK
+test_actual_delivery_preferred_over_order_date (test_local.LocalTest.test_actual_delivery_preferred_over_order_date) ... ok
+test_communication_is_last_tool (test_local.LocalTest.test_communication_is_last_tool) ... ok
+test_conflict_rejects_stale_same_worker_overwrite (test_local.LocalTest.test_conflict_rejects_stale_same_worker_overwrite) ... ok
+test_conflict_retries_independent_field_with_fresh_version (test_local.LocalTest.test_conflict_retries_independent_field_with_fresh_version) ... ok
+test_customer_profile_minimizes_pii (test_local.LocalTest.test_customer_profile_minimizes_pii) ... ok
+test_estimated_delivery_is_not_actual_delivery (test_local.LocalTest.test_estimated_delivery_is_not_actual_delivery) ... ok
+test_guardrail_creation_validates_against_real_sdk_schema (test_local.LocalTest.test_guardrail_creation_validates_against_real_sdk_schema) ... ok
+test_guardrail_refusal_does_not_require_or_mutate_workflow (test_local.LocalTest.test_guardrail_refusal_does_not_require_or_mutate_workflow) ... ok
+test_inference_loop_is_bounded (test_local.LocalTest.test_inference_loop_is_bounded) ... ok
+test_inventory_uses_composite_key (test_local.LocalTest.test_inventory_uses_composite_key) ... ok
+test_log_arguments_do_not_contain_customer_text_or_pii (test_local.LocalTest.test_log_arguments_do_not_contain_customer_text_or_pii) ... ok
+test_math_cannot_route_to_inventory (test_local.LocalTest.test_math_cannot_route_to_inventory) ... ok
+test_memory_context_is_actor_and_session_scoped (test_local.LocalTest.test_memory_context_is_actor_and_session_scoped) ... ok
+test_memory_creation_schema_and_runtime_env (test_local.LocalTest.test_memory_creation_schema_and_runtime_env) ... ok
+test_model_cannot_refund_different_order (test_local.LocalTest.test_model_cannot_refund_different_order) ... ok
+test_model_configurations_and_guardrail_for_subagents (test_local.LocalTest.test_model_configurations_and_guardrail_for_subagents) ... ok
+test_observability_failure_cannot_report_success (test_local.LocalTest.test_observability_failure_cannot_report_success) ... ok
+test_orders_paginate (test_local.LocalTest.test_orders_paginate) ... ok
+test_parallel_rag_runs_three_distinct_retrievers_concurrently (test_local.LocalTest.test_parallel_rag_runs_three_distinct_retrievers_concurrently) ... ok
+test_process_persists_real_turn_payload_in_memory_schema (test_local.LocalTest.test_process_persists_real_turn_payload_in_memory_schema) ... ok
+test_process_rejects_incomplete_workflow_without_fabricating_answer (test_local.LocalTest.test_process_rejects_incomplete_workflow_without_fabricating_answer) ... ok
+test_process_rejects_malformed_or_cross_customer_envelope (test_local.LocalTest.test_process_rejects_malformed_or_cross_customer_envelope) ... ok
+test_process_returns_communication_text_even_if_orchestrator_rewrites_it (test_local.LocalTest.test_process_returns_communication_text_even_if_orchestrator_rewrites_it) ... ok
+test_refund_inclusive_standard_and_premium_boundaries (test_local.LocalTest.test_refund_inclusive_standard_and_premium_boundaries) ... ok
+test_refund_rechecks_eligibility_and_is_idempotent (test_local.LocalTest.test_refund_rechecks_eligibility_and_is_idempotent) ... ok
+test_refund_rejects_unknown_tier_invalid_date_and_non_delivered (test_local.LocalTest.test_refund_rejects_unknown_tier_invalid_date_and_non_delivered) ... ok
+test_refund_requires_inventory_read_before_mutation (test_local.LocalTest.test_refund_requires_inventory_read_before_mutation) ... ok
+test_retrieval_error_is_never_policy_evidence (test_local.LocalTest.test_retrieval_error_is_never_policy_evidence) ... ok
+test_route_ignores_model_supplied_request_and_uses_trusted_envelope (test_local.LocalTest.test_route_ignores_model_supplied_request_and_uses_trusted_envelope) ... ok
+test_routing_rejects_refund_before_inventory_and_communication_before_workers (test_local.LocalTest.test_routing_rejects_refund_before_inventory_and_communication_before_workers) ... ok
+test_runtime_deploy_keeps_cli_contract (test_local.LocalTest.test_runtime_deploy_keeps_cli_contract) ... [Note] Observability configuration failed: RuntimeError
+
+  ────────────────────────────────────────────────────────────────────
+  [ STEP 01 ]  INVENTORY AGENT
+             Role  : Fetch order details and customer tier from DynamoDB
+             Model : us.anthropic.claude-sonnet-4-5-20250929-v1:0
+  ────────────────────────────────────────────────────────────────────
+    [AGENT REASONING - inventory_agent]
+             Status : [COMPLETE]  Elapsed: 0.0s  (LLM may still stream final text below)
+             State  : DynamoDB[inventory_agent]  version 2 -> 3
+  AWS Account: ********0000  |  Region: us-east-1
+  Runtime: udacity_agentcore_runtime  |  CLI project: agentcore/agentcore.json (stack AgentCore-udacity-default)
+  Runtime deployed: arn:aws:bedrock-agentcore:us-east-1:000000000000:runtime/test
+  Waiting for runtime status READYok
+test_runtime_invocation_does_not_retry_paid_turns_on_timeout (test_local.LocalTest.test_runtime_invocation_does_not_retry_paid_turns_on_timeout) ... ok
+test_session_reuse_clears_previous_worker_fields_under_lease (test_local.LocalTest.test_session_reuse_clears_previous_worker_fields_under_lease) ... ok
+test_six_route_families (test_local.LocalTest.test_six_route_families) ... ok
+test_state_conditional_write_and_return_new_attributes (test_local.LocalTest.test_state_conditional_write_and_return_new_attributes) ... ok
+test_state_creation_cannot_overwrite_existing_session (test_local.LocalTest.test_state_creation_cannot_overwrite_existing_session) ... ok
+test_state_metadata_cannot_be_overwritten_by_worker (test_local.LocalTest.test_state_metadata_cannot_be_overwritten_by_worker) ... ok
+test_state_reads_are_strongly_consistent (test_local.LocalTest.test_state_reads_are_strongly_consistent) ... ok
+test_status_or_policy_questions_cannot_start_return (test_local.LocalTest.test_status_or_policy_questions_cannot_start_return) ... ok
+test_tool_rejects_uninitialized_scope (test_local.LocalTest.test_tool_rejects_uninitialized_scope) ... ok
+test_tools_reject_cross_customer_and_session (test_local.LocalTest.test_tools_reject_cross_customer_and_session) ... ok
+test_unconfigured_kbs_do_not_invoke_billable_models (test_local.LocalTest.test_unconfigured_kbs_do_not_invoke_billable_models) ... ok
+test_wrong_session_owner_cannot_reinitialize (test_local.LocalTest.test_wrong_session_owner_cannot_reinitialize) ... ok
+
+----------------------------------------------------------------------
+Ran 43 tests in 2.362s
+
+OK
+ ready.
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 2 - Multi-Agent Orchestration[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+5pts] build_inventory_agent() returns an Agent object
+  [92m✓ PASS[0m [+5pts] InventoryAgent has 3 tools (3 found)
+  [92m✓ PASS[0m [+5pts] build_policy_agent() returns an Agent object
+  [92m✓ PASS[0m [+5pts] PolicyAgent has 1 tool (1 found)
+  [92m✓ PASS[0m [+5pts] build_orchestrator_agent() returns an Agent object
+  [92m✓ PASS[0m [+5pts] OrchestratorAgent has 5 routing tools (5 found)
+  [92m✓ PASS[0m [+5pts] OrchestratorAgent uses config.ORCHESTRATOR_MODEL_ID (Claude Haiku 4.5 - correct for routing)
+  [92m✓ PASS[0m [+5pts] Worker agents use config.WORKER_MODEL_ID (Claude Sonnet 4.5 - correct for reasoning)
+  [92m✓ PASS[0m [+0pts] build_policy_agent() runs the retrievers with ThreadPoolExecutor
+
+═══════════════════════════════════════════════════════
+  [1mScore: [92m40/40 pts (100%)[0m
+═══════════════════════════════════════════════════════
+
+  [92m[1m🎉 Perfect score! All tasks complete.[0m
+

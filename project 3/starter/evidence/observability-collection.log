@@ -1,0 +1,4 @@
+AWS identity VERIFIED: profile=novamart-dev region=us-east-1 account=********4915
+Actual scenario traces: 4
+Graph nodes: ['CommunicationAgent', 'InventoryAgent', 'KnowledgeBase:returns', 'KnowledgeBase:shipping', 'KnowledgeBase:warranty', 'NovaMart-Orchestrator', 'PolicyAgent', 'RefundAgent']
+CloudWatch: {'events': 82, 'info_events': 82, 'error_events': 0, 'truncated': False}

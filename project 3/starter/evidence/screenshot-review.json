@@ -1,0 +1,12 @@
+{
+  "xray-service-map.png": {
+    "status": "VERIFIED",
+    "sha256": "a45e42efa946a7bf7b8c09280c9d74c55b66fb9df7c75ccba523effe87f705cb",
+    "finding": "Full AWS CloudWatch X-Ray Service Map reviewed; connected Orchestrator, PolicyAgent, three Knowledge Base nodes and CommunicationAgent are visible; region us-east-1 is shown."
+  },
+  "official-tests-120.png": {
+    "status": "VERIFIED",
+    "sha256": "147a5d09824a44575e87b6c71afd40228e88bb6d7d16ed23630b84e4020e4c30",
+    "finding": "Terminal screenshot reviewed: PASS results and final score 120/120 (100%) are visible; upper output is partially cropped."
+  }
+}

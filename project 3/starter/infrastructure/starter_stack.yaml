@@ -1,0 +1,321 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Udacity Project - Enterprise Multi-Agent Architecture with Amazon Bedrock AgentCore
+  Infrastructure for DynamoDB, S3, S3 Vectors, IAM roles, and CloudWatch.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: udacity-agentcore
+Resources:
+
+  # ─────────────────────────────────────────────
+  # DYNAMODB - Application Data
+  # ─────────────────────────────────────────────
+
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+      TableName: !Sub ${ProjectName}-orders
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: customer_id
+          AttributeType: S
+        - AttributeName: order_id
+          AttributeType: S
+      # Composite key: every order lookup needs both customer_id (partition
+      # key) and order_id (sort key).
+      KeySchema:
+        - AttributeName: customer_id
+          KeyType: HASH
+        - AttributeName: order_id
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+
+  CustomersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+      TableName: !Sub ${ProjectName}-customers
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: customer_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: customer_id
+          KeyType: HASH
+
+  # Shared workflow state table.
+  # Each customer session gets one record here.
+  # Agents read and write to it as the orchestrator routes through them.
+  # version attribute enables optimistic locking (conditional writes).
+  WorkflowStateTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+      TableName: !Sub ${ProjectName}-workflow-state
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  # ─────────────────────────────────────────────
+  # S3 - Policy Documents (KB data source + deployment artifacts)
+  # ─────────────────────────────────────────────
+
+  PolicyDocumentsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+      BucketName: !Sub
+        - '${ProjectName}-policy-docs-${AWS::AccountId}-${ShortUUID}'
+        - ShortUUID: !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref 'AWS::StackId']]]]
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # ─────────────────────────────────────────────
+  # S3 VECTORS - Knowledge Base backing store (Task 5)
+  # ─────────────────────────────────────────────
+  # S3 Vectors is a separate service from general-purpose S3. A Bedrock
+  # Knowledge Base backed by S3 Vectors needs a *vector bucket* plus one
+  # *vector index* per Knowledge Base. All three are created here for selection
+  # in the Knowledge Base console wizard.
+  #
+  # Index settings match the Titan Embed Text v2 defaults used by the KBs:
+  #   dimension 1024, cosine distance, AMAZON_BEDROCK_TEXT non-filterable
+  #   (the chunk text is stored as metadata and must not be indexed).
+
+  VectorStoreBucket:
+    Type: AWS::S3Vectors::VectorBucket
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+      VectorBucketName: !Sub
+        - '${ProjectName}-vectors-${AWS::AccountId}-${ShortUUID}'
+        - ShortUUID: !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref 'AWS::StackId']]]]
+
+  ReturnsVectorIndex:
+    Type: AWS::S3Vectors::Index
+    Properties:
+      VectorBucketArn: !GetAtt VectorStoreBucket.VectorBucketArn
+      IndexName: returns-policy-index
+      DataType: float32
+      Dimension: 1024
+      DistanceMetric: cosine
+      MetadataConfiguration:
+        NonFilterableMetadataKeys:
+          - AMAZON_BEDROCK_TEXT
+
+  ShippingVectorIndex:
+    Type: AWS::S3Vectors::Index
+    Properties:
+      VectorBucketArn: !GetAtt VectorStoreBucket.VectorBucketArn
+      IndexName: shipping-policy-index
+      DataType: float32
+      Dimension: 1024
+      DistanceMetric: cosine
+      MetadataConfiguration:
+        NonFilterableMetadataKeys:
+          - AMAZON_BEDROCK_TEXT
+
+  WarrantyVectorIndex:
+    Type: AWS::S3Vectors::Index
+    Properties:
+      VectorBucketArn: !GetAtt VectorStoreBucket.VectorBucketArn
+      IndexName: warranty-policy-index
+      DataType: float32
+      Dimension: 1024
+      DistanceMetric: cosine
+      MetadataConfiguration:
+        NonFilterableMetadataKeys:
+          - AMAZON_BEDROCK_TEXT
+
+  # ─────────────────────────────────────────────
+  # IAM - Role for AgentCore
+  # ─────────────────────────────────────────────
+  # Assumed by the AgentCore Runtime (and usable by Bedrock). The deployed
+  # runtime imports the same config.py used locally, so it needs
+  # to read CloudFormation exports and download the code package from S3.
+
+  AgentCoreExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-agentcore-role
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: bedrock-agentcore.amazonaws.com
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+              ArnLike:
+                aws:SourceArn: !Sub arn:${AWS::Partition}:bedrock-agentcore:${AWS::Region}:${AWS::AccountId}:*
+      Policies:
+        - PolicyName: AgentCoreProjectPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [bedrock:InvokeModel, bedrock:InvokeModelWithResponseStream]
+                Resource:
+                  - !Sub arn:${AWS::Partition}:bedrock:us-*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0
+                  - !Sub arn:${AWS::Partition}:bedrock:us-*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0
+                  - !Sub arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0
+                  - !Sub arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0
+              - Effect: Allow
+                Action: [bedrock:ApplyGuardrail, bedrock:GetGuardrail]
+                Resource: !Sub arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:guardrail/*
+              - Effect: Allow
+                Action: bedrock:ApplyGuardrail
+                Resource: !Sub arn:${AWS::Partition}:bedrock:us-*:${AWS::AccountId}:guardrail-profile/us.guardrail.v1:0
+              - Effect: Allow
+                Action: [bedrock:Retrieve]
+                Resource: !Sub arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*
+              # Direct CodeZip deployment reads the encrypted CDK code asset.
+              - Effect: Allow
+                Action: [s3:GetObject, s3:GetObjectVersion]
+                Resource: !Sub arn:${AWS::Partition}:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/*
+              - Effect: Allow
+                Action: kms:Decrypt
+                Resource: !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/*
+                Condition:
+                  StringEquals:
+                    kms:ViaService: !Sub s3.${AWS::Region}.amazonaws.com
+                    kms:CallerAccount: !Ref AWS::AccountId
+                  ArnLike:
+                    kms:EncryptionContext:aws:s3:arn:
+                      - !Sub arn:${AWS::Partition}:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+                      - !Sub arn:${AWS::Partition}:s3:::cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/*
+              # These read-only discovery and telemetry APIs have no resource-level scope.
+              - Effect: Allow
+                Action: [cloudformation:ListExports, sts:GetCallerIdentity, xray:PutTraceSegments, xray:PutTelemetryRecords]
+                Resource: '*'
+              - Effect: Allow
+                Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents, logs:DescribeLogStreams]
+                Resource:
+                  - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/bedrock/agentcore/${ProjectName}:*
+                  - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/bedrock-agentcore/runtimes/udacity_agentcore_runtime*:*
+              - Effect: Allow
+                Action: [bedrock-agentcore:CreateEvent, bedrock-agentcore:ListEvents, bedrock-agentcore:RetrieveMemoryRecords]
+                Resource: !Sub
+                  - arn:${AWS::Partition}:bedrock-agentcore:${AWS::Region}:${AWS::AccountId}:memory/${MemoryPrefix}-*
+                  - MemoryPrefix: !Join ['_', !Split ['-', !Sub '${ProjectName}-memory']]
+              - Effect: Allow
+                Action: [dynamodb:GetItem, dynamodb:Query]
+                Resource: [!GetAtt OrdersTable.Arn, !GetAtt CustomersTable.Arn, !GetAtt WorkflowStateTable.Arn]
+              - Effect: Allow
+                Action: [dynamodb:PutItem, dynamodb:UpdateItem]
+                Resource: [!GetAtt OrdersTable.Arn, !GetAtt WorkflowStateTable.Arn]
+
+  # ─────────────────────────────────────────────
+  # CLOUDWATCH - Log Groups
+  # ─────────────────────────────────────────────
+
+  AgentLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+      LogGroupName: !Sub /aws/bedrock/agentcore/${ProjectName}
+      RetentionInDays: 14
+
+
+# ─────────────────────────────────────────────
+# OUTPUTS - Exported for config.py to read
+# ─────────────────────────────────────────────
+Outputs:
+
+  OrdersTableName:
+    Value: !Ref OrdersTable
+    Export:
+      Name: !Sub ${ProjectName}-OrdersTable
+
+  CustomersTableName:
+    Value: !Ref CustomersTable
+    Export:
+      Name: !Sub ${ProjectName}-CustomersTable
+
+  WorkflowStateTableName:
+    Value: !Ref WorkflowStateTable
+    Export:
+      Name: !Sub ${ProjectName}-WorkflowStateTable
+
+  PolicyDocumentsBucketName:
+    Value: !Ref PolicyDocumentsBucket
+    Export:
+      Name: !Sub ${ProjectName}-PolicyBucket
+
+  # S3 Vectors bucket *name* (select this in the Knowledge Base wizard)
+  VectorStoreBucketName:
+    Value: !Sub
+      - '${ProjectName}-vectors-${AWS::AccountId}-${ShortUUID}'
+      - ShortUUID: !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref 'AWS::StackId']]]]
+    Export:
+      Name: !Sub ${ProjectName}-VectorBucket
+
+  VectorStoreBucketArn:
+    Value: !GetAtt VectorStoreBucket.VectorBucketArn
+    Export:
+      Name: !Sub ${ProjectName}-VectorBucketArn
+
+  # One vector index per Knowledge Base (select the matching one per KB)
+  ReturnsVectorIndexName:
+    Value: returns-policy-index
+    Export:
+      Name: !Sub ${ProjectName}-ReturnsVectorIndex
+
+  ShippingVectorIndexName:
+    Value: shipping-policy-index
+    Export:
+      Name: !Sub ${ProjectName}-ShippingVectorIndex
+
+  WarrantyVectorIndexName:
+    Value: warranty-policy-index
+    Export:
+      Name: !Sub ${ProjectName}-WarrantyVectorIndex
+
+  AgentCoreRoleArn:
+    Value: !GetAtt AgentCoreExecutionRole.Arn
+    Export:
+      Name: !Sub ${ProjectName}-AgentCoreRoleArn
+
+  AgentLogGroupName:
+    Value: !Ref AgentLogGroup
+    Export:
+      Name: !Sub ${ProjectName}-AgentLogGroup

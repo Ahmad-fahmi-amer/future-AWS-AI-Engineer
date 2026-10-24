@@ -1,0 +1,8 @@
+{
+  "status": "VERIFIED",
+  "session_id": "integration-82f14bc0996147dbbbd01237df95fa05",
+  "version": 2,
+  "independent_concurrent_writes": "VERIFIED",
+  "stale_same_worker_rejected": true,
+  "exception": "RuntimeError"
+}

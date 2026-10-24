@@ -1,0 +1,19 @@
+{
+  "guardrail_runtime_refusal": {
+    "status": "VERIFIED",
+    "state_created": false,
+    "reply": "I can help with NovaMart orders and policies. Please rephrase without sensitive or restricted content.\n",
+    "trace_id": "1-6ad9309b-8aad0d43c8de28ae56104a54"
+  },
+  "customer_isolation": {
+    "status": "VERIFIED",
+    "workflow_unchanged": true,
+    "error_code": "RuntimeClientError",
+    "note": "Current SDK maps the handler PermissionError to generic HTTP 500; no customer data returned."
+  },
+  "real_refund_idempotency": {
+    "status": "VERIFIED",
+    "order_unchanged": true,
+    "same_reference": true
+  }
+}

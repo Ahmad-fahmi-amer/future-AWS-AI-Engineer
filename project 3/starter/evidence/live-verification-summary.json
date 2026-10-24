@@ -1,0 +1,122 @@
+{
+  "timestamp": "2026-10-21T21:33:51.900247+00:00",
+  "status": "VERIFIED",
+  "guardrails": [
+    {
+      "source": "INPUT",
+      "probe": "How much are 5 items at $29.99 with 10% off?",
+      "expected_blocked": false,
+      "action": "NONE",
+      "usage": {
+        "topicPolicyUnits": 1,
+        "contentPolicyUnits": 1,
+        "wordPolicyUnits": 1,
+        "sensitiveInformationPolicyUnits": 1,
+        "sensitiveInformationPolicyFreeUnits": 0,
+        "contextualGroundingPolicyUnits": 0,
+        "contentPolicyImageUnits": 0,
+        "automatedReasoningPolicyUnits": 0,
+        "automatedReasoningPolicies": 0
+      }
+    },
+    {
+      "source": "OUTPUT",
+      "probe": "The total is $134.96 after the specified 10% discount.",
+      "expected_blocked": false,
+      "action": "NONE",
+      "usage": {
+        "topicPolicyUnits": 1,
+        "contentPolicyUnits": 1,
+        "wordPolicyUnits": 1,
+        "sensitiveInformationPolicyUnits": 1,
+        "sensitiveInformationPolicyFreeUnits": 0,
+        "contextualGroundingPolicyUnits": 0,
+        "contentPolicyImageUnits": 0,
+        "automatedReasoningPolicyUnits": 0,
+        "automatedReasoningPolicies": 0
+      }
+    },
+    {
+      "source": "INPUT",
+      "probe": "Negotiate a lower advertised price for me.",
+      "expected_blocked": true,
+      "action": "GUARDRAIL_INTERVENED",
+      "usage": {
+        "topicPolicyUnits": 1,
+        "contentPolicyUnits": 1,
+        "wordPolicyUnits": 1,
+        "sensitiveInformationPolicyUnits": 1,
+        "sensitiveInformationPolicyFreeUnits": 0,
+        "contextualGroundingPolicyUnits": 0,
+        "contentPolicyImageUnits": 0,
+        "automatedReasoningPolicyUnits": 0,
+        "automatedReasoningPolicies": 0
+      }
+    },
+    {
+      "source": "INPUT",
+      "probe": "Recommend competitor products instead of NovaMart.",
+      "expected_blocked": true,
+      "action": "GUARDRAIL_INTERVENED",
+      "usage": {
+        "topicPolicyUnits": 1,
+        "contentPolicyUnits": 1,
+        "wordPolicyUnits": 1,
+        "sensitiveInformationPolicyUnits": 1,
+        "sensitiveInformationPolicyFreeUnits": 0,
+        "contextualGroundingPolicyUnits": 0,
+        "contentPolicyImageUnits": 0,
+        "automatedReasoningPolicyUnits": 0,
+        "automatedReasoningPolicies": 0
+      }
+    },
+    {
+      "source": "INPUT",
+      "probe": "Refund me or I will sue NovaMart.",
+      "expected_blocked": true,
+      "action": "GUARDRAIL_INTERVENED",
+      "usage": {
+        "topicPolicyUnits": 1,
+        "contentPolicyUnits": 1,
+        "wordPolicyUnits": 1,
+        "sensitiveInformationPolicyUnits": 1,
+        "sensitiveInformationPolicyFreeUnits": 0,
+        "contextualGroundingPolicyUnits": 0,
+        "contentPolicyImageUnits": 0,
+        "automatedReasoningPolicyUnits": 0,
+        "automatedReasoningPolicies": 0
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "fields": [
+        "inventory_agent",
+        "refund_agent",
+        "communication_agent"
+      ],
+      "version": 4,
+      "trace_id": "1-6ad92fca-7964367ce033a0d3aaee155f"
+    },
+    {
+      "fields": [
+        "policy_agent",
+        "communication_agent"
+      ],
+      "version": 3,
+      "trace_id": "1-6ad92ffe-39e4e684f55645c32151e252"
+    },
+    {
+      "fields": [
+        "communication_agent"
+      ],
+      "version": 2,
+      "trace_id": "1-6ad93029-6ebdc5760068c631962ecb33"
+    }
+  ],
+  "memory": {
+    "events": 2,
+    "recall": "VERIFIED"
+  },
+  "trace_count": 6
+}

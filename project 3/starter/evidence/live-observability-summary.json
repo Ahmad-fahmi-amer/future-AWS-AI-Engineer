@@ -1,0 +1,598 @@
+{
+  "timestamp": "2026-10-21T21:45:15.780004+00:00",
+  "live_status": "VERIFIED",
+  "scenario_traces": [
+    {
+      "trace_id": "1-6ad92fca-7964367ce033a0d3aaee155f",
+      "duration_seconds": 43.646,
+      "nodes": [
+        {
+          "name": "NovaMart-Orchestrator",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "InventoryAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "check_order_status",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "get_customer_tier",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "RefundAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "initiate_refund",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "get_inventory_context",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "CommunicationAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "get_full_workflow_context",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "initialize_session",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "CommunicationAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "RefundAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "InventoryAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        }
+      ]
+    },
+    {
+      "trace_id": "1-6ad92ffe-39e4e684f55645c32151e252",
+      "duration_seconds": 35.622,
+      "nodes": [
+        {
+          "name": "NovaMart-Orchestrator",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "PolicyAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "search_all_policies",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "retrieve_returns_policy",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:returns",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "retrieve_shipping_policy",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:shipping",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "retrieve_warranty_policy",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:warranty",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "initialize_session",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "CommunicationAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "get_full_workflow_context",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "CommunicationAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "PolicyAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:warranty",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:shipping",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:returns",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        }
+      ]
+    },
+    {
+      "trace_id": "1-6ad93029-6ebdc5760068c631962ecb33",
+      "duration_seconds": 15.242,
+      "nodes": [
+        {
+          "name": "NovaMart-Orchestrator",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "CommunicationAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "get_full_workflow_context",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "initialize_session",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "CommunicationAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        }
+      ]
+    },
+    {
+      "trace_id": "1-6ad93152-2d57fdd1d17052bfba4d7977",
+      "duration_seconds": 35.236,
+      "nodes": [
+        {
+          "name": "NovaMart-Orchestrator",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "initialize_session",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "PolicyAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "search_all_policies",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "retrieve_shipping_policy",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:shipping",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "retrieve_warranty_policy",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:warranty",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "retrieve_returns_policy",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:returns",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "CommunicationAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "get_full_workflow_context",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "CommunicationAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "PolicyAgent",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:returns",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:warranty",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        },
+        {
+          "name": "KnowledgeBase:shipping",
+          "error": false,
+          "fault": false,
+          "throttle": false
+        }
+      ]
+    }
+  ],
+  "service_graph": [
+    {
+      "name": "CommunicationAgent",
+      "reference_id": 0,
+      "edges": [],
+      "statistics": {
+        "OkCount": 6,
+        "ErrorStatistics": {
+          "ThrottleCount": 0,
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "FaultStatistics": {
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "TotalCount": 6,
+        "TotalResponseTime": 45.803
+      }
+    },
+    {
+      "name": "InventoryAgent",
+      "reference_id": 1,
+      "edges": [],
+      "statistics": {
+        "OkCount": 1,
+        "ErrorStatistics": {
+          "ThrottleCount": 0,
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "FaultStatistics": {
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "TotalCount": 1,
+        "TotalResponseTime": 11.729
+      }
+    },
+    {
+      "name": "KnowledgeBase:returns",
+      "reference_id": 2,
+      "edges": [],
+      "statistics": {
+        "OkCount": 2,
+        "ErrorStatistics": {
+          "ThrottleCount": 0,
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "FaultStatistics": {
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "TotalCount": 2,
+        "TotalResponseTime": 0.833
+      }
+    },
+    {
+      "name": "KnowledgeBase:shipping",
+      "reference_id": 3,
+      "edges": [],
+      "statistics": {
+        "OkCount": 2,
+        "ErrorStatistics": {
+          "ThrottleCount": 0,
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "FaultStatistics": {
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "TotalCount": 2,
+        "TotalResponseTime": 0.907
+      }
+    },
+    {
+      "name": "KnowledgeBase:warranty",
+      "reference_id": 4,
+      "edges": [],
+      "statistics": {
+        "OkCount": 2,
+        "ErrorStatistics": {
+          "ThrottleCount": 0,
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "FaultStatistics": {
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "TotalCount": 2,
+        "TotalResponseTime": 1.005
+      }
+    },
+    {
+      "name": "NovaMart-Orchestrator",
+      "reference_id": 5,
+      "edges": [
+        8,
+        1,
+        7,
+        0,
+        3,
+        2,
+        4
+      ],
+      "statistics": {
+        "OkCount": 7,
+        "ErrorStatistics": {
+          "ThrottleCount": 0,
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "FaultStatistics": {
+          "OtherCount": 1,
+          "TotalCount": 1
+        },
+        "TotalCount": 8,
+        "TotalResponseTime": 159.197
+      }
+    },
+    {
+      "name": "NovaMart-Orchestrator",
+      "reference_id": 6,
+      "edges": [
+        5
+      ],
+      "statistics": {}
+    },
+    {
+      "name": "PolicyAgent",
+      "reference_id": 7,
+      "edges": [],
+      "statistics": {
+        "OkCount": 2,
+        "ErrorStatistics": {
+          "ThrottleCount": 0,
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "FaultStatistics": {
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "TotalCount": 2,
+        "TotalResponseTime": 36.414
+      }
+    },
+    {
+      "name": "RefundAgent",
+      "reference_id": 8,
+      "edges": [],
+      "statistics": {
+        "OkCount": 1,
+        "ErrorStatistics": {
+          "ThrottleCount": 0,
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "FaultStatistics": {
+          "OtherCount": 0,
+          "TotalCount": 0
+        },
+        "TotalCount": 1,
+        "TotalResponseTime": 12.463
+      }
+    }
+  ],
+  "project_logs": {
+    "events": 82,
+    "info_events": 82,
+    "error_events": 0,
+    "truncated": false
+  },
+  "runtime": {
+    "status": "READY",
+    "network": {
+      "networkMode": "PUBLIC"
+    },
+    "protocol": {
+      "serverProtocol": "HTTP"
+    },
+    "environment_keys": [
+      "AGENTCORE_MEMORY_ID",
+      "AGENT_LOG_GROUP",
+      "AGENT_LOG_LEVEL",
+      "AGENT_LOG_TO_CLOUDWATCH",
+      "AGENT_TRACE_SAMPLING_RATE",
+      "AGENT_TRACING_ENABLED",
+      "AWS_REGION",
+      "GUARDRAIL_ID",
+      "GUARDRAIL_VERSION",
+      "PROJECT_NAME",
+      "RETURNS_KB_ID",
+      "SHIPPING_KB_ID",
+      "WARRANTY_KB_ID"
+    ]
+  },
+  "knowledge_bases": {
+    "returns": {
+      "status": "ACTIVE",
+      "storage_type": "S3_VECTORS",
+      "bucket_matches_foundation": true,
+      "index_name": "returns-policy-index",
+      "index_matches_required": true,
+      "embedding_model": "amazon.titan-embed-text-v2:0",
+      "data_sources": [
+        {
+          "prefixes": [
+            "policies/returns/"
+          ],
+          "sync_statuses": [
+            "COMPLETE"
+          ]
+        }
+      ]
+    },
+    "shipping": {
+      "status": "ACTIVE",
+      "storage_type": "S3_VECTORS",
+      "bucket_matches_foundation": true,
+      "index_name": "shipping-policy-index",
+      "index_matches_required": true,
+      "embedding_model": "amazon.titan-embed-text-v2:0",
+      "data_sources": [
+        {
+          "prefixes": [
+            "policies/shipping/"
+          ],
+          "sync_statuses": [
+            "COMPLETE"
+          ]
+        }
+      ]
+    },
+    "warranty": {
+      "status": "ACTIVE",
+      "storage_type": "S3_VECTORS",
+      "bucket_matches_foundation": true,
+      "index_name": "warranty-policy-index",
+      "index_matches_required": true,
+      "embedding_model": "amazon.titan-embed-text-v2:0",
+      "data_sources": [
+        {
+          "prefixes": [
+            "policies/warranty/"
+          ],
+          "sync_statuses": [
+            "COMPLETE"
+          ]
+        }
+      ]
+    }
+  }
+}
